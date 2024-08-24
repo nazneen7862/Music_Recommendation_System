@@ -1,0 +1,76 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Recommendation System</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #1DB954;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #1DB954;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #17a647;
+        }
+        .recommendations {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Recommendation System</h1>
+    <p>Enter a song name to get similar song recommendations:</p>
+    <input type="text" id="song_name" placeholder="Enter song name...">
+    <button onclick="getRecommendations()">Get Recommendations</button>
+    <div id="output" class="recommendations"></div>
+
+    <script>
+        function getRecommendations() {
+            const songName = document.getElementById("song_name").value;
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'song_name=' + encodeURIComponent(songName)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("output").innerHTML = '<div class="error">' + data.error + '</div>';
+                } else {
+                    const recommendations = data.recommendations.map(song => '<p>' + song + '</p>').join('');
+                    document.getElementById("output").innerHTML = '<h2>Recommended Songs:</h2>' + recommendations;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
